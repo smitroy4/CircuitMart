@@ -1,4 +1,6 @@
 package com.smit.circuitmart.inventory_service.service;
+import com.smit.circuitmart.inventory_service.dto.OrderRequestDto;
+import com.smit.circuitmart.inventory_service.dto.OrderRequestItemDto;
 import com.smit.circuitmart.inventory_service.dto.ProductDto;
 import com.smit.circuitmart.inventory_service.entity.Product;
 import com.smit.circuitmart.inventory_service.repository.ProductRepository;
@@ -34,26 +36,26 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Inventory not found"));
     }
 
-//    @Transactional
-//    public Double reduceStocks(OrderRequestDto orderRequestDto) {
-//        log.info("Reducing the stocks");
-//        Double totalPrice = 0.0;
-//        for(OrderRequestItemDto orderRequestItemDto: orderRequestDto.getItems()) {
-//            Long productId = orderRequestItemDto.getProductId();
-//            Integer quantity = orderRequestItemDto.getQuantity();
-//
-//            Product product = productRepository.findById(productId).orElseThrow(() ->
-//                    new RuntimeException("Product not found with id: "+productId));
-//
-//            if(product.getStock() < quantity) {
-//                throw new RuntimeException("Product cannot be fulfilled for given quantity");
-//            }
-//
-//            product.setStock(product.getStock()-quantity);
-//            productRepository.save(product);
-//            totalPrice += quantity*product.getPrice();
-//        }
-//        return totalPrice;
-//    }
+    @Transactional
+    public Double reduceStocks(OrderRequestDto orderRequestDto) {
+        log.info("Reducing the stocks");
+        Double totalPrice = 0.0;
+        for(OrderRequestItemDto orderRequestItemDto: orderRequestDto.getItems()) {
+            Long productId = orderRequestItemDto.getProductId();
+            Integer quantity = orderRequestItemDto.getQuantity();
+
+            Product product = productRepository.findById(productId).orElseThrow(() ->
+                    new RuntimeException("Product not found with id: "+productId));
+
+            if(product.getStock() < quantity) {
+                throw new RuntimeException("Product cannot be fulfilled for given quantity");
+            }
+
+            product.setStock(product.getStock()-quantity);
+            productRepository.save(product);
+            totalPrice += quantity*product.getPrice();
+        }
+        return totalPrice;
+    }
 }
 

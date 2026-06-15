@@ -1,5 +1,6 @@
 package com.smit.circuitmart.order_service.controller;
 
+import com.smit.circuitmart.order_service.client.InventoryFeignClient;
 import com.smit.circuitmart.order_service.dto.OrderRequestDto;
 import com.smit.circuitmart.order_service.service.OrdersService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,17 +18,18 @@ import java.util.List;
 public class OrdersController {
 
     private final OrdersService orderService;
+    private final InventoryFeignClient inventoryFeignClient;
 
     @GetMapping("/helloOrders")
     public String helloOrders() {
         return "Hello from Orders Service";
     }
 
-//    @PostMapping("/create-order")
-//    public ResponseEntity<OrderRequestDto> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
-//        OrderRequestDto orderRequestDto1 = orderService.createOrder(orderRequestDto);
-//        return ResponseEntity.ok(orderRequestDto1);
-//    }
+    @PostMapping("/create-order")
+    public ResponseEntity<OrderRequestDto> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
+        OrderRequestDto orderRequestDto1 = orderService.createOrder(orderRequestDto);
+        return ResponseEntity.ok(orderRequestDto1);
+    }
 
     @GetMapping
     public ResponseEntity<List<OrderRequestDto>> getAllOrders(HttpServletRequest httpServletRequest) {
