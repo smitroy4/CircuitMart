@@ -21,8 +21,11 @@ public class OrdersController {
     private final InventoryFeignClient inventoryFeignClient;
 
     @GetMapping("/helloOrders")
-    public String helloOrders() {
-        return "Hello from Orders Service";
+    public String helloOrders(@RequestHeader("X-User-Id") String userId) {
+
+        log.info("Received User Id: {}", userId);
+
+        return "Hello from Orders Service, userId is : " + userId;
     }
 
     @PostMapping("/create-order")

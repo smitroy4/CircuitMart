@@ -1,3 +1,6 @@
+jwt:
+  SecretKey: aas7a6f6df7s6s6f756gs8d5g6s5f6s5f54r46rwrfbj4btfuhdg7hd87hdfff6g7df465fbtdfghv7rt8236749
+
 server:
   port: 8080
 
@@ -18,7 +21,12 @@ spring:
               filters:
                 - StripPrefix=2
                 - name: LoggingOrdersFilter
-
+                - name: Authentication
+                  args:
+                    isEnabled: false
+                - name: Authorization
+                  args:
+                    allowedRoles: ADMIN, SUPER_ADMIN
             - id: inventory-service
               uri: lb://INVENTORY-SERVICE
               predicates:
@@ -26,6 +34,7 @@ spring:
               filters:
                 - StripPrefix=2
                 - AddRequestHeader=X-Custom-Header, Smit
+                - name: Authentication
 
 eureka:
   client:
