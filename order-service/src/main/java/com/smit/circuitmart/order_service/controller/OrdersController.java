@@ -6,6 +6,7 @@ import com.smit.circuitmart.order_service.service.OrdersService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +21,15 @@ public class OrdersController {
     private final OrdersService orderService;
     private final InventoryFeignClient inventoryFeignClient;
 
+    @Value("${my.variable}")
+    private String myVariable;
+
     @GetMapping("/helloOrders")
-    public String helloOrders(@RequestHeader("X-User-Id") String userId) {
+//    public String helloOrders(@RequestHeader("X-User-Id") String userId) {
+    public String helloOrders() {
+//        log.info("Received User Id: {}");
 
-        log.info("Received User Id: {}", userId);
-
-        return "Hello from Orders Service, userId is : " + userId;
+        return "Hello from Orders Service, my variable is: "+ myVariable;
     }
 
     @PostMapping("/create-order")

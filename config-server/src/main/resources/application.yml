@@ -1,0 +1,20 @@
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/smitroy4/circuitmart-config-server
+          username: smitroy4
+          password: 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
+          default-label: main
+
+server:
+  port: 8888
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
