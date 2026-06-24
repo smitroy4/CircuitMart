@@ -1,12 +1,14 @@
 package com.smit.circuitmart.order_service.controller;
 
 import com.smit.circuitmart.order_service.client.InventoryFeignClient;
+import com.smit.circuitmart.order_service.config.FeaturesEnableConfig;
 import com.smit.circuitmart.order_service.dto.OrderRequestDto;
 import com.smit.circuitmart.order_service.service.OrdersService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,10 +18,12 @@ import java.util.List;
 @RequestMapping("/orders")
 @RequiredArgsConstructor
 @Slf4j
+@RefreshScope
 public class OrdersController {
 
     private final OrdersService orderService;
     private final InventoryFeignClient inventoryFeignClient;
+    private final FeaturesEnableConfig featuresEnableConfig;
 
     @Value("${my.variable}")
     private String myVariable;
@@ -29,7 +33,11 @@ public class OrdersController {
     public String helloOrders() {
 //        log.info("Received User Id: {}");
 
-        return "Hello from Orders Service, my variable is: "+ myVariable;
+        if(featuresEnableConfig.isUserTrackingEnabled()){
+            return "User tracking enabled, var is: " + myVariable;
+        }else {
+            return "Hello from Orders Service, my variable is: " + myVariable;
+        }
     }
 
     @PostMapping("/create-order")
