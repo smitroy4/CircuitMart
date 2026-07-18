@@ -7,7 +7,7 @@ spring:
       server:
         git:
           uri: https://github.com/smitroy4/circuitmart-config-server
-          username: smitroy4
+          username: "${GITHUB_USERNAME:smitroy4}"
           password: "${GITHUB_ACCESS_TOKEN}"
           default-label: main
 

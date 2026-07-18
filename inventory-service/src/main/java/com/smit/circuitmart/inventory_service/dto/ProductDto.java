@@ -1,6 +1,7 @@
 package com.smit.circuitmart.inventory_service.dto;
 
 import lombok.Data;
+import java.math.BigDecimal;
 
 @Data
 public class ProductDto {
@@ -9,7 +10,7 @@ public class ProductDto {
 
     private String name;
 
-    private Double price;
+    private BigDecimal price;
 
     private Integer stock;
 

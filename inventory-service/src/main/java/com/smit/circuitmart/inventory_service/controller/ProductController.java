@@ -1,16 +1,16 @@
 package com.smit.circuitmart.inventory_service.controller;
 
-import com.smit.circuitmart.inventory_service.client.OrdersFeignClient;
 import com.smit.circuitmart.inventory_service.dto.OrderRequestDto;
 import com.smit.circuitmart.inventory_service.dto.ProductDto;
 import com.smit.circuitmart.inventory_service.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -20,14 +20,6 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private final DiscoveryClient discoveryClient;
-    private final RestClient restClient;
-    private final OrdersFeignClient ordersFeignClient;
-
-    @GetMapping("/fetchOrders")
-    public String fetchFromOrdersService() {
-        return ordersFeignClient.helloOrders();
-    }
 
     @GetMapping
     public ResponseEntity<List<ProductDto>> getAllInventory() {
@@ -41,11 +33,21 @@ public class ProductController {
         return ResponseEntity.ok(inventory);
     }
 
-    @PutMapping("/reduce-stocks")
-    public ResponseEntity<Double> reduceStocks(
-            @RequestBody OrderRequestDto orderRequestDto) {
+    @PostMapping("/reduce-stocks")
+    public ResponseEntity<BigDecimal> reduceStocks(
+            @Valid @RequestBody OrderRequestDto orderRequestDto) {
 
-        Double totalPrice = productService.reduceStocks(orderRequestDto);
+        BigDecimal totalPrice = productService.reduceStocks(orderRequestDto);
         return ResponseEntity.ok(totalPrice);
+    }
+
+    @PostMapping
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        return ResponseEntity.noContent().build();
     }
 }

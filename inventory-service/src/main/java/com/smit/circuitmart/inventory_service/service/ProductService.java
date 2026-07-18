@@ -7,11 +7,13 @@ import com.smit.circuitmart.inventory_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,29 +33,29 @@ public class ProductService {
 
     public ProductDto getProductById(Long id) {
         log.info("Fetching Product with ID: {}", id);
-        Optional<Product> inventory = productRepository.findById(id);
-        return inventory.map(item -> modelMapper.map(item, ProductDto.class))
-                .orElseThrow(() -> new RuntimeException("Inventory not found"));
+        return productRepository.findById(id)
+                .map(item -> modelMapper.map(item, ProductDto.class))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found"));
     }
 
-    @Transactional
-    public Double reduceStocks(OrderRequestDto orderRequestDto) {
+    @Transactional(rollbackFor = Exception.class)
+    public BigDecimal reduceStocks(OrderRequestDto orderRequestDto) {
         log.info("Reducing the stocks");
-        Double totalPrice = 0.0;
+        BigDecimal totalPrice = BigDecimal.ZERO;
         for(OrderRequestItemDto orderRequestItemDto: orderRequestDto.getItems()) {
             Long productId = orderRequestItemDto.getProductId();
             Integer quantity = orderRequestItemDto.getQuantity();
 
             Product product = productRepository.findById(productId).orElseThrow(() ->
-                    new RuntimeException("Product not found with id: "+productId));
+                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with id: " + productId));
 
             if(product.getStock() < quantity) {
-                throw new RuntimeException("Product cannot be fulfilled for given quantity");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Product cannot be fulfilled for given quantity");
             }
 
             product.setStock(product.getStock()-quantity);
             productRepository.save(product);
-            totalPrice += quantity*product.getPrice();
+            totalPrice = totalPrice.add(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
         }
         return totalPrice;
     }
